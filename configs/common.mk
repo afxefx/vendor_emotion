@@ -18,7 +18,7 @@ bootanimation_sizes := $(shell echo -e $(subst $(space),'\n',$(bootanimation_siz
 # find the appropriate size and set
 define check_and_set_bootanimation
 $(eval TARGET_BOOTANIMATION_NAME := $(shell \
-  if [ -z "$(TARGET_BOOTANIMATION_NAME)" ]; then
+  if [ -z "$(TARGET_BOOTANIMATION_NAME)" ]; then \
     if [ "$(1)" -le "$(TARGET_BOOTANIMATION_SIZE)" ]; then \
       echo $(1); \
       exit 0; \
@@ -60,6 +60,11 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.build.selinux=1
 
+# Default notification/alarm sounds
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.config.notification_sound=Argon.ogg \
+    ro.config.alarm_alert=Hassium.ogg
+
 ifneq ($(TARGET_BUILD_VARIANT),user)
 # Thank you, please drive thru!
 PRODUCT_PROPERTY_OVERRIDES += persist.sys.dun.override=0
@@ -72,12 +77,9 @@ endif
 
 # Backup Tool
 PRODUCT_COPY_FILES += \
-    vendor/emotion/prebuilt/common/bin/backuptool.sh:install/bin/backuptool.sh \
-    vendor/emotion/prebuilt/common/bin/backuptool.functions:install/bin/backuptool.functions \
-    vendor/emotion/prebuilt/common/bin/50-emotion.sh:system/addon.d/50-emotion.sh \
-    vendor/emotion/prebuilt/common/bin/blacklist:system/addon.d/blacklist \
-    vendor/emotion/prebuilt/common/bin/99-backup.sh:system/addon.d/99-backup.sh \
-    vendor/emotion/prebuilt/common/etc/backup.conf:system/etc/backup.conf
+    vendor/emotion/prebuilt/bin/backuptool.sh:install/bin/backuptool.sh \
+    vendor/emotion/prebuilt/bin/backuptool.functions:install/bin/backuptool.functions \
+    vendor/emotion/prebuilt/bin/blacklist:system/addon.d/blacklist
 # Backup Services whitelist
 PRODUCT_COPY_FILES += \
     vendor/emotion/configs/permissions/backup.xml:system/etc/sysconfig/backup.xml
@@ -127,6 +129,9 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     vendor/emotion/configs/permissions/com.emotion.android.xml:system/etc/permissions/com.emotion.android.xml
 
+# Include CM audio files
+include vendor/emotion/configs/cm_audio.mk
+
 # Theme engine
 include vendor/emotion/configs/themes_common.mk
 
@@ -144,7 +149,11 @@ PRODUCT_PACKAGES += \
     KernelAdiutor \
     Savoca-kcal \
     AdAway \
-    WeatherManagerService
+    LatinIME \
+    LatinImeDictionaryPack \
+    Stk \
+    OmniSwitch \
+    EmotionControl
 
 #Build EmotionOTA only if EMOTION_VERSION_MAINTENANCE isn't Unofficial
 ifneq ($(EMOTION_VERSION_MAINTENANCE),Unofficial)
@@ -155,6 +164,8 @@ endif
 # Optional EMOTION packages
 PRODUCT_PACKAGES += \
     libemoji \
+    LiveWallpapersPicker \
+    PhotoTable \
     Terminal
 
 # Include librsjni explicitly to workaround GMS issue
@@ -164,15 +175,20 @@ PRODUCT_PACKAGES += \
 # Custom CM packages
 PRODUCT_PACKAGES += \
     AudioFX \
-    CMWallpapers \
+    CMAudioService \
     CMFileManager \
+    CMParts \
     CMSettingsProvider \
+    CMWallpapers \
     Eleven \
     ExactCalculator \
     Launcher3 \
     LockClock \
+    Screencast \
+    SoundRecorder \
     Trebuchet \
-    LiveLockScreenService \
+    WallpaperPicker \
+    WeatherManagerService \
     WeatherProvider
 
 # Exchange support
@@ -181,20 +197,31 @@ PRODUCT_PACKAGES += \
 
 # Extra tools in CM
 PRODUCT_PACKAGES += \
-    libsepol \
-    mke2fs \
-    tune2fs \
-    nano \
-    htop \
-    mkfs.ntfs \
+    7z \
+    bash \
+    bzip2 \
+    curl \
     fsck.ntfs \
-    mount.ntfs \
     gdbserver \
+    htop \
+    lib7z \
+    libsepol \
     micro_bench \
+    mke2fs \
+    mkfs.ntfs \
+    mount.ntfs \
+    nano \
     oprofiled \
+    pigz \
+    powertop \
     sqlite3 \
     strace \
-    pigz
+    tune2fs \
+    unrar \
+    unzip \
+    vim \
+    wget \
+    zip
 
 # Custom off-mode charger
 ifneq ($(WITH_CM_CHARGER),false)
@@ -230,14 +257,25 @@ PRODUCT_PACKAGES += \
     rsync
 
 # Stagefright FFMPEG plugin
-#PRODUCT_PACKAGES += \
-#    libffmpeg_extractor \
-#    libffmpeg_omx \
-#    media_codecs_ffmpeg.xml
-#
-#PRODUCT_PROPERTY_OVERRIDES += \
-#    media.sf.omx-plugin=libffmpeg_omx.so \
-#    media.sf.extractor-plugin=libffmpeg_extractor.so
+PRODUCT_PACKAGES += \
+    libffmpeg_extractor \
+    libffmpeg_omx \
+    media_codecs_ffmpeg.xml
+
+PRODUCT_PROPERTY_OVERRIDES += \
+    media.sf.omx-plugin=libffmpeg_omx.so \
+    media.sf.extractor-plugin=libffmpeg_extractor.so
+
+# Storage manager
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.storage_manager.enabled=true
+
+# Telephony
+PRODUCT_PACKAGES += \
+    telephony-ext
+
+PRODUCT_BOOT_JARS += \
+    telephony-ext
 
 # These packages are excluded from user builds
 ifneq ($(TARGET_BUILD_VARIANT),user)
@@ -266,12 +304,4 @@ $(call inherit-product, vendor/emotion/configs/emotion_common.mk)
 -include $(WORKSPACE)/build_env/image-auto-bits.mk
 -include vendor/emotion/configs/partner_gms.mk
 
-# SuperSU
-PRODUCT_COPY_FILES += \
-    vendor/emotion/prebuilt/common/etc/supersu.zip:supersu/supersu.zip
-
 -include $(WORKSPACE)/build_env/image-auto-bits.mk
-
--include vendor/cyngn/product.mk
-
-$(call prepend-product-if-exists, vendor/extra/product.mk)
