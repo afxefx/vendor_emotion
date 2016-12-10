@@ -1,0 +1,56 @@
+[
+  {
+    "remote":"emotroid",
+    "repository": "Emotroid-Rom/android_device_samsung_chagallwifi",
+    "target_path": "device/samsung/chagallwifi",
+    "branch": "mm"
+  },
+  {
+    "remote":"emotroid",
+    "repository": "Emotroid-Rom/android_vendor_samsung_chagallwifi",
+    "target_path": "vendor/samsung/chagallwifi",
+    "branch": "mm"
+  },
+  {
+    "remote":"emotroid",
+    "repository": "Emotroid-Rom/android_kernel_samsung_chagalllte",
+    "target_path": "kernel/samsung/chagalllte",
+    "branch": "mm"
+  },
+  {
+    "remote":"emotroid",
+    "repository": "Emotroid-Rom/android_vendor_samsung_chagall_common",
+    "target_path": "vendor/samsung/chagall-common",
+    "branch": "mm"
+  },
+  {
+    "remote":"emotroid",
+    "repository": "Emotroid-Rom/android_hardware_samsung_slsi_exynos5420",
+    "target_path": "hardware/samsung_slsi/exynos5420",
+    "branch": "mm"
+  },
+  {
+    "remote":"emotroid",
+    "repository": "Emotroid-Rom/android_hardware_samsung_slsi_exynos",
+    "target_path": "hardware/samsung_slsi/exynos",
+    "branch": "mm"
+  },
+    {
+    "remote":"emotroid",
+    "repository": "Emotroid-Rom/android_device_samsung_chagall_klimt_common",
+    "target_path": "device/samsung/chagall-klimt-common",
+    "branch": "mm"
+  },
+  {
+    "remote":"emotroid",
+    "repository": "Emotroid-Rom/android_hardware_samsung_slsi_exynos5-insignal",
+    "target_path": "hardware/samsung_slsi/exynos5-insignal",
+    "branch": "mm"
+  },
+  {
+    "remote": "emotroid",
+    "repository": "Emotroid-Rom/android_vendor_samsung_chagall_klimt_common",
+    "target_path": "vendor/samsung/chagall-klimt-common",
+    "branch": "mm"
+  } 
+]
